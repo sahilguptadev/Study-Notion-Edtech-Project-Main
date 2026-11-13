@@ -26,6 +26,8 @@ const viewCourseSlice = createSlice({
     updateCompletedLectures: (state, action) => {
       state.completedLectures = [...state.completedLectures, action.payload]
     },
+    // Clear the previously viewed course so a new course never renders stale data
+    resetViewCourse: () => initialState,
   },
 })
 
@@ -35,6 +37,7 @@ export const {
   setTotalNoOfLectures,
   setCompletedLectures,
   updateCompletedLectures,
+  resetViewCourse,
 } = viewCourseSlice.actions
 
 export default viewCourseSlice.reducer

@@ -10,6 +10,7 @@ import {
   setCourseSectionData,
   setEntireCourseData,
   setTotalNoOfLectures,
+  resetViewCourse,
 } from "../slices/viewCourseSlice"
 
 export default function ViewCourse() {
@@ -19,8 +20,13 @@ export default function ViewCourse() {
   const [reviewModal, setReviewModal] = useState(false)
 
   useEffect(() => {
+    // Drop the previous course's data first, and ignore responses that arrive
+    // after the user has already moved on to a different course.
+    let cancelled = false
+    dispatch(resetViewCourse())
     ;(async () => {
       const courseData = await getFullDetailsOfCourse(courseId, token)
+      if (cancelled || !courseData?.courseDetails) return
       // console.log("Course Data here... ", courseData.courseDetails)
       dispatch(setCourseSectionData(courseData.courseDetails.courseContent))
       dispatch(setEntireCourseData(courseData.courseDetails))
@@ -31,8 +37,11 @@ export default function ViewCourse() {
       })
       dispatch(setTotalNoOfLectures(lectures))
     })()
+    return () => {
+      cancelled = true
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [courseId])
 
   return (
     <>
